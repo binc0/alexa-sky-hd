@@ -478,7 +478,7 @@ def make_response(request, properties, namespace, name):
     return response
 
 def send_command(command):
-    if commands[endpointid]== 'skybox-001':
+    if endpointID == 'skybox-001':
         if command == 'sleep':
             time.sleep(1)
             return
@@ -503,7 +503,7 @@ def send_command(command):
         s.sendall(b)
         s.close()
     
-    elif commands[endpointid]== 'skybox-001':
+    elif endpointID == 'skybox-002':
         if commands == 'sleep':
             time.sleep(1)
             return
