@@ -20,8 +20,10 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 try:
     sky_box_name = environ['SKY_BOX_NAME']
+    sky_box_name_1 = environ['SKY_BOX_NAME_1']
 except:
     sky_box_name = 'Sky Box'
+    sky_box_name_1 = 'Sky Q mini'
 
 commands = {
         "power": 0,
@@ -75,6 +77,21 @@ appliances = [
         "modelName": "Digibox",
         "version": "1",
         "friendlyName": sky_box_name,
+        "description": "Sky Digibox",
+        "isReachable": True,
+        "displayCategories":["TV"],
+        "actions": [
+            "turnOn",
+            "turnOff",
+            ],
+        "cookie": {}
+    },
+    {
+        "applianceId": "skybox-002",
+        "manufacturerName": "Sky",
+        "modelName": "Digibox",
+        "version": "1",
+        "friendlyName": sky_box_name_1,
         "description": "Sky Digibox",
         "isReachable": True,
         "displayCategories":["TV"],
@@ -216,7 +233,7 @@ def get_channels():
         return get_channels_en()
 
 def get_channels_it():
-    url = 'https://raw.githubusercontent.com/ndg63276/alexa-sky-hd/master/channels-it.json'
+    url = 'https://repo.binco.ml/channels-it.json'
     r=requests.get(url)
     channels = r.json()
     return channels
@@ -311,7 +328,8 @@ def handle_non_discovery(request):
     if request_namespace == "Alexa.PowerController":
         response_name = "powerState"
         if request_name == "TurnOn":
-            commands.append('sky')
+            commands.append('power')
+            commands.append('dismiss')
             value = "ON"
         else:
             commands.append('sky')
@@ -366,6 +384,8 @@ def handle_non_discovery(request):
                 commands.append('channelup')
             if increment == -1:
                 commands.append('channeldown')
+         
+    
 
     elif request_namespace == "Alexa.SceneController":
         endpointId = request['directive']['endpoint']['endpointId']
@@ -381,7 +401,7 @@ def handle_non_discovery(request):
                 name = "DeactivationStarted"
         elif endpointId == "skyq-netflix":
             if request_name == "Activate":
-                commands=['tvguide','sleep','right','down','down','down','down','down','select']
+                commands=['tvguide','sleep','down','down','down','down','down''down','down','down','down','down''down','right','select']
                 name = "ActivationStarted"
             if request_name == "Deactivate":
                 commands.append('sky')
@@ -458,29 +478,57 @@ def make_response(request, properties, namespace, name):
     return response
 
 def send_command(command):
-    if command == 'sleep':
-        time.sleep(1)
-        return
-    code=commands[command]
-    commandBytes = [4,1,0,0,0,0,224 + (code/16), code % 16]
-    b=bytearray()
-    for i in commandBytes:
-        b.append(i)
-    l = 12
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((environ['HOST'], int(environ['PORT'])))
-    recv=s.recv(64)
-    while len(recv)<24:
-        s.sendall(recv[0:l])
-        l = 1
+    if commands[endpointid]== 'skybox-001':
+        if command == 'sleep':
+            time.sleep(1)
+            return
+        code=commands[command]
+        commandBytes = [4,1,0,0,0,0,224 + (code/16), code % 16]
+        b=bytearray()
+        for i in commandBytes:
+            b.append(i)
+        l = 12
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((environ['HOST'], int(environ['PORT'])))
         recv=s.recv(64)
-    s.sendall(b)
-    commandBytes[1]=0
-    b=bytearray()
-    for i in commandBytes:
-        b.append(i)
-    s.sendall(b)
-    s.close()
+        while len(recv)<24:
+            s.sendall(recv[0:l])
+            l = 1
+            recv=s.recv(64)
+        s.sendall(b)
+        commandBytes[1]=0
+        b=bytearray()
+        for i in commandBytes:
+            b.append(i)
+        s.sendall(b)
+        s.close()
+    
+    elif commands[endpointid]== 'skybox-001':
+        if commands == 'sleep':
+            time.sleep(1)
+            return
+        code=commands[command]
+        commandBytes = [4,1,0,0,0,0,224 + (code/16), code % 16]
+        b=bytearray()
+        for i in commandBytes:
+            b.append(i)
+        l = 12
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((environ['HOST'], int(environ['PORT_2'])))
+        recv=s.recv(64)
+        while len(recv)<24:
+            s.sendall(recv[0:l])
+            l = 1
+            recv=s.recv(64)
+        s.sendall(b)
+        commandBytes[1]=0
+        b=bytearray()
+        for i in commandBytes:
+            b.append(i)
+        s.sendall(b)
+        s.close()
+    
+           
 
 def get_endpoint(appliance):
     endpoint = {
@@ -527,7 +575,7 @@ def get_capabilities(appliance):
                      "version":"1.0",
                      "properties":{ },
                      "supportedOperations" : ["Play", "Pause", "Rewind", "FastForward", "Stop"] 
-            },
+            }
 
         ]
 
