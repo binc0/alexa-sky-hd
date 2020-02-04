@@ -233,7 +233,7 @@ def get_channels():
         return get_channels_en()
 
 def get_channels_it():
-    url = 'https://raw.githubusercontent.com/binc0/alexa-sky-hd/master/channels-it-hd.json'
+    url = 'https://raw.githubusercontent.com/binc0/alexa-sky-hd/master/sky-q-italy.json'
     r=requests.get(url)
     channels = r.json()
     return channels
@@ -330,6 +330,7 @@ def handle_non_discovery(request):
         response_name = "powerState"
         if request_name == "TurnOn":
             commands.append('sky')
+            commands.append('backup')
             value = "ON"
         else:
             commands.append('sky')
