@@ -233,7 +233,7 @@ def get_channels():
         return get_channels_en()
 
 def get_channels_it():
-    url = 'https://repo.binco.ml/channels-it.json'
+    url = 'https://raw.githubusercontent.com/binc0/alexa-sky-hd/master/channels-it-hd.json'
     r=requests.get(url)
     channels = r.json()
     return channels
