@@ -487,8 +487,8 @@ def send_command(command, endpointId=''):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     if endpointId == 'skybox-001':
         port = int(environ['PORT'])
-    elif endpointId == 'skybox-002':
-        port = int(environ['PORT_2'])
+    if endpointId == 'skybox-002':
+        port = int(environ['PORT_1'])
     s.connect((environ['HOST'], port))
     recv=s.recv(64)
     while len(recv)<24:
